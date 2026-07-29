@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --blockui-primary: oklch(59.59% 0.24 255.09);
+  --blockui-primary-foreground: oklch(98% 0.005 255);
+
+  --blockui-secondary: oklch(96.08% 0.012 286.08);
+  --blockui-secondary-foreground: oklch(21% 0.034 286.67);
+
+  --blockui-destructive: oklch(62.8% 0.258 29.23);
+  --blockui-destructive-foreground: oklch(98% 0.005 29);
+
+  --blockui-success: oklch(64.9% 0.178 155.32);
+  --blockui-success-foreground: oklch(98% 0.005 155);
+
+  --blockui-warning: oklch(76.9% 0.188 70.14);
+  --blockui-warning-foreground: oklch(20% 0.05 70);
+
+  --blockui-muted: oklch(96.08% 0.012 286.08);
+  --blockui-muted-foreground: oklch(55.1% 0.023 264.36);
+
+  --blockui-accent: oklch(96.08% 0.012 286.08);
+  --blockui-accent-foreground: oklch(21% 0.034 286.67);
+
+  --blockui-background: oklch(100% 0 0);
+  --blockui-foreground: oklch(14.5% 0.005 285.75);
+
+  --blockui-border: oklch(91.96% 0.013 255.51);
+  --blockui-input: oklch(91.96% 0.013 255.51);
+  --blockui-ring: oklch(59.59% 0.24 255.09);
+}
+
+@theme inline {
+  /* Default font */
+  --font-sans: 'Exo', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Apply Exo as the base font for all library elements */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+}
