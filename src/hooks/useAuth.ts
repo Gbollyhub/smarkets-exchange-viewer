@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { toast } from "sonner";
 import LOGIN from "@/api/auth";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import type { AuthResponse } from "@/types";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -21,12 +21,12 @@ export default function useAuth() {
   const loginMutation = useMutation<
     AuthResponse,
     AxiosError,
-    { email: string; password: string }
+    { email: string; password: string; remember: boolean }
   >({
     mutationFn: LOGIN,
 
     onSuccess: (data) => {
-        setSession(data.token, email, data.refresh_token);
+        setSession(data.token);
       toast.success("Login successful");
       navigate(from, { replace: true });
     },
@@ -52,6 +52,7 @@ export default function useAuth() {
     loginMutation.mutate({
       email,
       password,
+      remember: rememberDevice,
     });
   };
 

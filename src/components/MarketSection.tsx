@@ -7,7 +7,9 @@ type Props = {
   isOpen: boolean;
   onToggle: (id: string) => void;
   marketContracts: Contract[];
-  quotes: QuotesResponse
+  quotes: QuotesResponse;
+  isOddSelected: (id: string) => boolean;
+  onToggleOdd: (id: string) => void;
 };
 
 export default function MarketSection({
@@ -16,6 +18,8 @@ export default function MarketSection({
   onToggle,
   marketContracts,
   quotes,
+  isOddSelected,
+  onToggleOdd,
 }: Props) {
   return (
     <div
@@ -43,20 +47,37 @@ export default function MarketSection({
 
           {marketContracts.map((c) => {
             const book = quotes[c.id];
+            // "buy"/"sell" here are from the trader's point of view, which is
+            // the opposite of the book's own naming: offers are what you buy
+            // at, bids are what you sell at. [0] is just the best (top) price.
             const buy = book?.offers?.[0]?.price;
             const sell = book?.bids?.[0]?.price;
+            const buyId = `${c.id}-buy`;
+            const sellId = `${c.id}-sell`;
             return (
               <div
                 key={c.id}
                 className="grid grid-cols-[1fr_80px_80px] gap-2 px-4 py-1.5 items-center"
               >
                 <span className="text-sm">{c.name}</span>
-                <span className="text-center text-sm font-semibold rounded bg-green-600 text-white py-1">
+                <button
+                  type="button"
+                  onClick={() => onToggleOdd(buyId)}
+                  className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                    isOddSelected(buyId) ? "bg-gray-700 text-white" : "bg-green-600 text-white"
+                  }`}
+                >
                   {formatDecimal(buy)}
-                </span>
-                <span className="text-center text-sm font-semibold rounded bg-blue-600 text-white py-1">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onToggleOdd(sellId)}
+                  className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                    isOddSelected(sellId) ? "bg-gray-700 text-white" : "bg-blue-600 text-white"
+                  }`}
+                >
                   {formatDecimal(sell)}
-                </span>
+                </button>
               </div>
             );
           })}

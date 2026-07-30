@@ -1,5 +1,5 @@
 import { getEventMarkets } from "@/api/markets";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import { useQuery } from "@tanstack/react-query";
 
 export function useEventMarkets(eventId: string) {
@@ -7,6 +7,6 @@ export function useEventMarkets(eventId: string) {
   return useQuery({
     queryKey: ["eventMarkets", eventId],
     queryFn: () => getEventMarkets(eventId),
-    enabled: !!token && !!eventId,
+    enabled: !!token && !!eventId, // no point calling this before we know which event we're looking at
   });
 }

@@ -1,5 +1,5 @@
 import { getEventById } from "@/api/events";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import { useQuery } from "@tanstack/react-query";
 
 export function useEventDetail(id: string) {
@@ -7,6 +7,6 @@ export function useEventDetail(id: string) {
   return useQuery({
     queryKey: ["event", id],
     queryFn: () => getEventById(id),
-    enabled: !!token && !!id,
+    enabled: !!token && !!id, // guard against firing with an empty id while the route param is still resolving
   });
 }

@@ -1,21 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import logoSvg from "@/assets/logo.svg";
-import { getButtonClassName } from "@/components/Button";
-import { useAuthContext } from "@/context/AuthContext";
+import { getButtonClassName } from "@/components/buttonStyles";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import getInitials from "@/lib/user";
 import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-type Props = {};
-
-export default function TopBar({}: Props) {
+export default function TopBar() {
   const SMARKET_CLIENT_URL = import.meta.env.VITE_SMARKET_CLIENT_URL;
   const { token, logout } = useAuthContext();
   const { data: user, isLoading } = useCurrentUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Only listen while the menu is actually open, and use mousedown rather
+  // than click so the menu closes before a click on something else underneath
+  // it gets a chance to fire.
   useEffect(() => {
     if (!menuOpen) return;
 

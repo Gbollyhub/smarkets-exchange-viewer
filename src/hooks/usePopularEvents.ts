@@ -1,10 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPopularEventIds, getEventsByIds, getPopularEvents } from "@/api/events";
-import { useAuthContext } from "@/context/AuthContext";
+import { getPopularEventIds, getEventsByIds } from "@/api/events";
+import { useAuthContext } from "@/hooks/useAuthContext";
 
 export default function usePopularEvent() {
   const { token } = useAuthContext();
 
+  // Two calls, not one: the API only gives us the popular event *ids* up
+  // front, so we have to wait for those before we can ask for the actual
+  // event details. The second query stays disabled until the first resolves.
   const popularEventsIds = useQuery({
     queryKey: ["popularIds"],
     queryFn: getPopularEventIds,
@@ -17,16 +20,9 @@ export default function usePopularEvent() {
     enabled: !!popularEventsIds.data && popularEventsIds.data.length > 0,
   });
 
-  const popularEvents = useQuery({
-    queryKey: ["popularEvents"],
-    queryFn: getPopularEvents,
-    enabled: !!token,
-  });
-
   return {
     events: eventsQuery.data,
     isLoading: popularEventsIds.isLoading || eventsQuery.isLoading,
     isError: popularEventsIds.isError || eventsQuery.isError,
-    popularEvents,
   };
 }

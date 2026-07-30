@@ -1,27 +1,18 @@
 // context/AuthContext.tsx
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
 import api from "@/lib/api";
-
-type AuthState = {
-  token: string | null;
-  email: string | null;
-  isReady: boolean;
-  setSession: (token: string, email: string, refreshToken: string | undefined) => void;
-  logout: () => void;
-};
-
-const AuthContext = createContext<AuthState | null>(null);
+import { logoutSession } from "@/api/auth";
+import { AuthContext } from "@/context/authContextValue";
 
 // read once at startup
 function readStoredToken(): string | null {
   return localStorage.getItem("smk_token");
 }
 
-function readStoredEmail(): string | null {
-  return localStorage.getItem("smk_email");
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // with a synchronous read there's no async gap, so we're ready immediately
+  const [isReady] = useState(true);
+
   const [token, setToken] = useState<string | null>(() => {
     const stored = readStoredToken();
     if (stored)
@@ -29,38 +20,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return stored;
   });
 
-  const [email, setEmail] = useState<string | null>(() => readStoredEmail());
-
-  // with a synchronous read there's no async gap, so we're ready immediately
-  const [isReady] = useState(true);
-
-  const setSession = (token: string, email: string, refreshToken?: string) => {
+  const setSession = (token: string) => {
     setToken(token);
-    setEmail(email);
     localStorage.setItem("smk_token", token);
-    localStorage.setItem("smk_email", email);
-    if (refreshToken) localStorage.setItem("smk_refresh", refreshToken); // <- add
-    api.defaults.headers.common["Authorization"] = `Session-Token ${token}`;
   };
 
-  const logout = () => {
-    setToken(null);
-    setEmail(null);
-    localStorage.removeItem("smk_token");
-    localStorage.removeItem("smk_email");
-    localStorage.removeItem("smk_refresh"); // <- add
-    delete api.defaults.headers.common["Authorization"];
+  const logout = async () => {
+    try {
+      await logoutSession(); // tell the server to end the session
+    } catch {
+      // ignore, we log out locally regardless
+    } finally {
+      setToken(null);
+      localStorage.removeItem("smk_token");
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ token, email, isReady, setSession, logout }}>
+    <AuthContext.Provider value={{ token, isReady, setSession, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuthContext() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuthContext must be used within AuthProvider");
-  return ctx;
 }

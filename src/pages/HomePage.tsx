@@ -8,6 +8,9 @@ import { useQuotes } from "@/hooks/useQuotes";
 import { useMemo } from "react";
 import type { SmarketsEvent, Market, QuotesResponse } from "@/types";
 
+// What one row on the homepage actually needs, after we've stitched together
+// four separate API responses (events, markets, contracts, quotes) that don't
+// come back pre-joined.
 interface BoardItem {
   event: SmarketsEvent;
   market: Market | undefined;
@@ -27,6 +30,9 @@ function HomePage() {
     [events],
   );
 
+  // useMemo here isn't just tidiness - these arrays feed straight into query
+  // keys below, so a new array identity on every render would mean react-query
+  // treats it as a brand new query and refetches constantly.
   const eventIds = useMemo<string[]>(
     () => featuredEvents.map((e) => e.id),
     [featuredEvents],
@@ -39,9 +45,11 @@ function HomePage() {
   );
   const { data: contracts = [] } = useContracts(marketIds);
   const { data: quotes = {} as QuotesResponse } = useQuotes(marketIds);
-  const { selectedOdd, toggleOdd } = useOddSelection();
+  const { isOddSelected, toggleOdd } = useOddSelection();
 
-  // one view-model per event: its featured market + priced contracts
+  // Now join everything back up: for each featured event, find its one
+  // featured market, then its contracts, then price each contract from the
+  // quotes lookup (offers = what you'd buy at, bids = what you'd sell at).
   const board = useMemo<BoardItem[]>(() => {
     return featuredEvents.map((event) => {
       const market = markets.find((m) => m.event_id === event.id);
@@ -69,16 +77,17 @@ function HomePage() {
       <div className="p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Featured events</h1>
-          <span className="text-xs text-gray-500">Live · updates every 4s</span>
+          <span className="text-sm text-gray-500">Live · updates every 4s</span>
         </div>
 
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {board.map(({ event, market, contracts }: any) => (
           <MatchCard
             key={event.id}
             event={event}
             market={market}
             contracts={contracts}
-            selectedOdd={selectedOdd}
+            isOddSelected={isOddSelected}
             onToggleOdd={toggleOdd}
           />
         ))}

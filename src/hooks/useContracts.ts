@@ -1,7 +1,7 @@
 // hooks/useContracts.ts
 import { useQuery } from "@tanstack/react-query";
 import { getContracts } from "@/api/contracts";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/hooks/useAuthContext";
 
 export function useContracts(marketIds: string[]) {
   const { token } = useAuthContext();

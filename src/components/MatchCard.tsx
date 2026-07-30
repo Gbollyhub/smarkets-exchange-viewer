@@ -7,11 +7,17 @@ type Props = {
   event: SmarketsEvent;
   market: Market | undefined;
   contracts: PricedContract[];
-  selectedOdd: string | null;
+  isOddSelected: (id: string) => boolean;
   onToggleOdd: (id: string) => void;
 };
 
-export default function MatchCard({ event, market, contracts }: Props) {
+export default function MatchCard({
+  event,
+  market,
+  contracts,
+  isOddSelected,
+  onToggleOdd,
+}: Props) {
   return (
     <Link
       to={`/events/${event.id}`}
@@ -49,20 +55,44 @@ export default function MatchCard({ event, market, contracts }: Props) {
           <span className="text-center">Sell</span>
         </div>
 
-        {contracts.map((c) => (
-          <div
-            key={c.id}
-            className="grid grid-cols-[1fr_80px_80px] gap-2 py-1.5 items-center"
-          >
-            <span className="text-sm">{c.name}</span>
-            <span className="text-center text-sm font-semibold rounded bg-green-600 text-white py-1">
-              {formatDecimal(c.buy)}
-            </span>
-            <span className="text-center text-sm font-semibold rounded bg-blue-600 text-white py-1">
-              {formatDecimal(c.sell)}
-            </span>
-          </div>
-        ))}
+        {contracts.map((c) => {
+          const buyId = `${c.id}-buy`;
+          const sellId = `${c.id}-sell`;
+          return (
+            <div
+              key={c.id}
+              className="grid grid-cols-[1fr_80px_80px] gap-2 py-1.5 items-center"
+            >
+              <span className="text-sm">{c.name}</span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleOdd(buyId);
+                }}
+                className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                  isOddSelected(buyId) ? "bg-gray-700 text-white" : "bg-green-600 text-white"
+                }`}
+              >
+                {formatDecimal(c.buy)}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleOdd(sellId);
+                }}
+                className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                  isOddSelected(sellId) ? "bg-gray-700 text-white" : "bg-blue-600 text-white"
+                }`}
+              >
+                {formatDecimal(c.sell)}
+              </button>
+            </div>
+          );
+        })}
 
         {contracts.length === 0 && (
           <div className="py-2 text-sm text-gray-400">No prices yet</div>

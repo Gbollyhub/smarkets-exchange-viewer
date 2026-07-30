@@ -3,9 +3,7 @@ import Input from "@/components/Input";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import useAuth from "@/hooks/useAuth";
 
-type Props = {};
-
-export default function LoginForm({}: Props) {
+export default function LoginForm() {
   const SMARKET_CLIENT_URL = import.meta.env.VITE_SMARKET_CLIENT_URL;
   const {
     email,
@@ -89,7 +87,7 @@ export default function LoginForm({}: Props) {
                   </svg>
                 )}
               </div>
-              <span className="text-xs text-gray-500 leading-relaxed">
+              <span className="text-sm text-gray-500 leading-relaxed">
                 Remember me on this device
               </span>
             </label>

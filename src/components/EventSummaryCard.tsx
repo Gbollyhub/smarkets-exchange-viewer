@@ -23,16 +23,15 @@ export default function EventSummaryCard({
       <div className="text-xs text-gray-500 px-5 pt-5 capitalize">{formatEventType(eventType)}</div>
       <div className="flex items-start justify-between px-5 pt-5 pb-3">
         <div className="flex items-center gap-3">
-          <div className="text-lg font-bold text-gray-900 leading-tight">{eventName}</div>
+          <div className="text-3xl font-bold text-gray-900 leading-tight">{eventName}</div>
           {eventState === "live" && (
-            <span className="text-xs text-red-600 flex flex-row gap-1"><PlayCircleIcon className="w-4 h-4 fill-red-600"/> Live</span>
+            <span className="text-sm text-red-600 flex flex-row gap-1"><PlayCircleIcon className="w-4 h-4 fill-red-600"/> Live</span>
           )}
         </div>
       </div>
 
-      {/* Match info + Graph/OrderBook toggle */}
       <div className="flex items-center justify-between px-5 pb-4">
-        <div className="flex items-center gap-4 text-xs text-gray-500">
+        <div className="flex items-center gap-4 text-sm text-gray-500">
           <span className="flex items-center gap-1.5">
             <ClockIcon className="w-3.5 h-3.5" />
             {kickoff}
