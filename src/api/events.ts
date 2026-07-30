@@ -23,7 +23,9 @@ export async function getEventsByIds(ids: string[]): Promise<SmarketsEvent[]> {
   return data.events;
 }
 
-export async function getEventById(id: string): Promise<SmarketsEvent | undefined> {
+export async function getEventById(
+  id: string,
+): Promise<SmarketsEvent | undefined> {
   const { data } = await api.get<EventsResponse>(`/v3/events/${id}/`);
   return data.events[0];
 }

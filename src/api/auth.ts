@@ -1,6 +1,10 @@
 import api from "@/lib/api";
 
-const login = async (inputData: { email: string; password: string, remember: boolean }) => {
+const login = async (inputData: {
+  email: string;
+  password: string;
+  remember: boolean;
+}) => {
   const credentials = {
     username: inputData.email,
     password: inputData.password,

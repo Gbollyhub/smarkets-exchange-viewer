@@ -11,4 +11,4 @@ export const formatDecimal = (price: number | undefined | null): string =>
 // makes them presentable in the UI.
 export const formatEventType = (event_type: string) => {
   return event_type.split("_").join(" ").toLocaleLowerCase();
-}
+};

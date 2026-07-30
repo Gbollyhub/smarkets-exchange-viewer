@@ -30,7 +30,6 @@ export default function TopBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
-
   return (
     <div>
       {/* ── navbar ───────────────────────────────────────────────────────── */}
@@ -60,7 +59,9 @@ export default function TopBar() {
               aria-expanded={menuOpen}
               aria-label="Account menu"
             >
-              {isLoading ? "…" : getInitials(`${user?.given_name} ${user?.family_name}`)}
+              {isLoading
+                ? "…"
+                : getInitials(`${user?.given_name} ${user?.family_name}`)}
             </button>
 
             {menuOpen && (
@@ -95,7 +96,7 @@ export default function TopBar() {
               to="/login"
               className={getButtonClassName(
                 "secondary",
-                "whitespace-nowrap px-3 py-1.5 text-xs sm:px-5 sm:py-2 sm:text-sm"
+                "whitespace-nowrap px-3 py-1.5 text-xs sm:px-5 sm:py-2 sm:text-sm",
               )}
             >
               Login
@@ -104,7 +105,7 @@ export default function TopBar() {
               href={`${SMARKET_CLIENT_URL}/members/signup/`}
               className={getButtonClassName(
                 "primary",
-                "whitespace-nowrap px-3 py-1.5 text-xs sm:px-5 sm:py-2 sm:text-sm"
+                "whitespace-nowrap px-3 py-1.5 text-xs sm:px-5 sm:py-2 sm:text-sm",
               )}
             >
               <span className="sm:hidden">Sign up</span>

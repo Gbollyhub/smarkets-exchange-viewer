@@ -15,7 +15,9 @@ export default function EventPage() {
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   // which event we've already auto-opened a market for, so it only happens
   // once per event rather than every time openIds happens to be empty
-  const [autoOpenedEventId, setAutoOpenedEventId] = useState<string | null>(null);
+  const [autoOpenedEventId, setAutoOpenedEventId] = useState<string | null>(
+    null,
+  );
 
   const { id = "" } = useParams();
 

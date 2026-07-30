@@ -7,7 +7,7 @@ export function useCurrentUser() {
   return useQuery({
     queryKey: ["currentUser"],
     queryFn: GETUSER,
-    enabled: !!token,       
-    staleTime: 5 * 60 * 1000
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
   });
 }
