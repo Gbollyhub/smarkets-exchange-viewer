@@ -4,7 +4,7 @@ import type { Market, MarketsResponse } from "@/types";
 export async function getFeaturedMarkets(eventIds: string[]): Promise<Market[]> {
   const { data } = await api.get<MarketsResponse>(
     `/v3/events/${eventIds.join(",")}/markets/`,
-    { params: { popular: true, limit_by_event: 1 } }
+    { params: { limit_by_event: 1 } }
   );
   return data.markets;
 }

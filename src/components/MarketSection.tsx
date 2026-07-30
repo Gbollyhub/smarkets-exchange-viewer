@@ -28,7 +28,7 @@ export default function MarketSection({
     >
       <button
         onClick={() => onToggle(market.id)}
-        className="w-full flex items-center justify-between px-4 py-3 font-medium"
+        className="cursor-pointer w-full flex items-center justify-between px-4 py-3 font-medium "
       >
         <span>{market.name}</span>
 
@@ -63,7 +63,7 @@ export default function MarketSection({
                 <button
                   type="button"
                   onClick={() => onToggleOdd(buyId)}
-                  className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                  className={`cursor-pointer text-center text-sm font-semibold rounded py-1 transition-colors ${
                     isOddSelected(buyId) ? "bg-gray-700 text-white" : "bg-green-600 text-white"
                   }`}
                 >
@@ -72,7 +72,7 @@ export default function MarketSection({
                 <button
                   type="button"
                   onClick={() => onToggleOdd(sellId)}
-                  className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                  className={`cursor-pointer text-center text-sm font-semibold rounded py-1 transition-colors ${
                     isOddSelected(sellId) ? "bg-gray-700 text-white" : "bg-blue-600 text-white"
                   }`}
                 >

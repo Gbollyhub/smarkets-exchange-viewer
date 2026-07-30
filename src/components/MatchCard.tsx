@@ -71,7 +71,7 @@ export default function MatchCard({
                   e.stopPropagation();
                   onToggleOdd(buyId);
                 }}
-                className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                className={`cursor-pointer text-center text-sm font-semibold rounded py-1 transition-colors ${
                   isOddSelected(buyId) ? "bg-gray-700 text-white" : "bg-green-600 text-white"
                 }`}
               >
@@ -84,7 +84,7 @@ export default function MatchCard({
                   e.stopPropagation();
                   onToggleOdd(sellId);
                 }}
-                className={`text-center text-sm font-semibold rounded py-1 transition-colors ${
+                className={`cursor-pointer text-center text-sm font-semibold rounded py-1 transition-colors ${
                   isOddSelected(sellId) ? "bg-gray-700 text-white" : "bg-blue-600 text-white"
                 }`}
               >

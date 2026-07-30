@@ -55,7 +55,7 @@ export default function TopBar() {
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#00B073] to-[#00211F] text-xs font-semibold text-white transition hover:opacity-90 sm:h-10 sm:w-10 sm:text-sm"
+              className="cursor-pointer flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#00B073] to-[#00211F] text-xs font-semibold text-white transition hover:opacity-90 sm:h-10 sm:w-10 sm:text-sm"
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               aria-label="Account menu"
@@ -81,7 +81,7 @@ export default function TopBar() {
                     logout();
                     setMenuOpen(false);
                   }}
-                  className="flex w-full items-center gap-2 rounded-md px-1 py-2 text-sm text-red-500 transition hover:bg-[#f5f5f5] hover:text-[#00211F]"
+                  className="cursor-pointer flex w-full items-center gap-2 rounded-md px-1 py-2 text-sm text-red-500 transition hover:bg-[#f5f5f5] hover:text-[#00211F]"
                 >
                   <ArrowRightStartOnRectangleIcon className="h-4 w-4" />
                   Logout
