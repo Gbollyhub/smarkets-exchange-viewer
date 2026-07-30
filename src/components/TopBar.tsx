@@ -34,7 +34,7 @@ export default function TopBar({}: Props) {
     <div>
       {/* ── navbar ───────────────────────────────────────────────────────── */}
       <header
-        className="flex w-full items-center justify-between gap-3 bg-white shadow-sm px-4 sm:px-6 md:px-14 lg:px-20"
+        className="flex w-full items-center justify-between gap-3 bg-white px-8 top-0 z-10 sticky"
         style={{ height: 72 }}
       >
         <img
@@ -65,7 +65,7 @@ export default function TopBar({}: Props) {
             {menuOpen && (
               <div
                 role="menu"
-                className="absolute right-0 top-full mt-2 w-54 rounded-lg border border-[#EDEDED] bg-white p-3 shadow-lg"
+                className="z-[50] absolute right-0 top-full mt-2 w-54 rounded-lg border border-[#EDEDED] bg-white p-3"
               >
                 <p className="truncate px-1 pb-2 text-sm font-bold text-[#00211F]">
                   {`${user?.given_name} ${user?.family_name}`}

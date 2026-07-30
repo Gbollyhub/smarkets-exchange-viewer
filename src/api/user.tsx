@@ -1,6 +1,6 @@
 import api from "@/lib/api";
 
-export const getUser = async () => {
+const getUser = async () => {
   const { data } = await api.get("/api/v0/users/current/");
   return data;
 };

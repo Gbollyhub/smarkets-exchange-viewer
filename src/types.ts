@@ -1,3 +1,5 @@
+import type { ComponentType, SVGProps } from "react";
+
 export type AuthResponse = {
   token: string;
   stop: string;
@@ -18,4 +20,38 @@ export interface UserProfile {
   member_id: number;
   permitted_country: boolean;
   rate: string;
+}
+
+export type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
+export interface Sport {
+  name: string;
+  icon: IconComponent;
+  active?: boolean;
+}
+
+export interface OddsValue {
+  label: string;
+  values: [number, number];
+}
+
+export interface MatchOdds {
+  home: OddsValue;
+  draw: OddsValue;
+  away: OddsValue;
+}
+
+export interface Match {
+  id: number;
+  home: string;
+  away: string;
+  time: string;
+  country: string;
+  odds: MatchOdds;
+}
+
+export interface MarketOddsRow {
+  contract: string;
+  buy: number;
+  sell: number;
 }
