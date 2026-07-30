@@ -16,7 +16,7 @@ function App() {
         <Routes>
           <Route element={<RequireAuth />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/event/:id" element={<EventPage />} />
+            <Route path="/events/:id" element={<EventPage />} />
           </Route>
           <Route element={<PublicOnly />}>
             <Route path="/login" element={<LoginPage />} />

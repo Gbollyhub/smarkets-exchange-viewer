@@ -8,7 +8,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss(), tsconfigPaths()],
-
     server: {
       proxy: {
         "/api": {
@@ -17,6 +16,11 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
       },
+    },
+    test: {
+      globals: true,
+      environment: "jsdom",
+      setupFiles: "./src/test/setup.ts",
     },
   };
 });

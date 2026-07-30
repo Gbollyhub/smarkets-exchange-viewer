@@ -26,7 +26,7 @@ export default function useAuth() {
     mutationFn: LOGIN,
 
     onSuccess: (data) => {
-      setSession(data.token, email);
+        setSession(data.token, email, data.refresh_token);
       toast.success("Login successful");
       navigate(from, { replace: true });
     },

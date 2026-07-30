@@ -17,7 +17,7 @@ export const eventSports: Sport[] = [
   { name: "Volley", icon: GlobeAmericasIcon },
 ];
 
-export const marketTabs = ["All", "Winner", "Half", "Totals", "Handicap"];
+export const marketTabs = ["All"];
 
 export const mainOdds: MarketOddsRow[] = [
   { contract: "Waikato", buy: 1.99, sell: 2.38 },

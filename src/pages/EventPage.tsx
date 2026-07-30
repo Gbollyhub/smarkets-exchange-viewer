@@ -1,145 +1,97 @@
-import { useNavigate } from "react-router-dom";
-import { useEventFilters } from "@/hooks/useEventFilters";
-import { useOddSelection } from "@/hooks/useOddSelection";
-import {
-  marketTabs,
-  mainOdds,
-  drawNoBet,
-  htftLeft,
-  htftRight,
-  eventSports,
-} from "@/data/eventData";
-import SportsSubNav from "@/components/SportsSubNav";
-import Breadcrumb from "@/components/Breadcrumb";
+import { Link, useParams } from "react-router-dom";
 import EventSummaryCard from "@/components/EventSummaryCard";
-import PillTabs from "@/components/PillTabs";
 import MarketSection from "@/components/MarketSection";
-import OddsTableHeader from "@/components/OddsTableHeader";
-import OddsRow from "@/components/OddsRow";
+import { useEventDetail } from "@/hooks/useEventDetail";
+import { useEventMarkets } from "@/hooks/useEventMarkets";
+import { useEffect, useMemo, useState } from "react";
+import { useContracts } from "@/hooks/useContracts";
+import { useQuotes } from "@/hooks/useQuotes";
+import type { Contract, QuotesResponse } from "@/types";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 
 type Props = {};
 
 export default function EventPage({}: Props) {
-  const navigate = useNavigate();
-  const {
-    activeMarket,
-    setActiveMarket,
-    graphView,
-    setGraphView,
-    dnbOpen,
-    setDnbOpen,
-    htftOpen,
-    setHtftOpen,
-  } = useEventFilters();
-  const { selectedOdd, toggleOdd } = useOddSelection();
+  // track which markets are expanded; open the first by default
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
 
-  const goToHome = () => navigate("/");
+  const { id = "" } = useParams();
+
+  const { data: event, isLoading: eventLoading, isError } = useEventDetail(id);
+  const { data: markets = [] } = useEventMarkets(id);
+
+  const visibleMarketIds = useMemo(
+    () => markets.filter((m) => openIds.has(m.id)).map((m) => m.id),
+    [markets, openIds],
+  );
+  const { data: contracts = [] } = useContracts(visibleMarketIds);
+  const { data: quotes = {} as QuotesResponse } = useQuotes(visibleMarketIds);
+
+  const contractsByMarket = useMemo(() => {
+    const map = new Map<string, Contract[]>();
+    contracts.forEach((c) => {
+      const list = map.get(c.market_id) ?? [];
+      list.push(c);
+      map.set(c.market_id, list);
+    });
+    return map;
+  }, [contracts]);
+
+  useEffect(() => {
+    if (markets.length && openIds.size === 0) {
+      setOpenIds(new Set([markets[0].id]));
+    }
+  }, [markets, openIds.size]);
+
+  const toggle = (marketId: string) => {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      next.has(marketId) ? next.delete(marketId) : next.add(marketId);
+      return next;
+    });
+  };
+
+  if (eventLoading) return <div className="p-6">Loading event…</div>;
+  if (isError || !event)
+    return <div className="p-6">Couldn't load this event.</div>;
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] font-sans text-sm">
-      <SportsSubNav sports={eventSports} onBack={() => navigate(-1)} showMoreIndicator />
+    <div className="min-h-screen bg-[#f0f2f5] font-sans text-sm px-8">
+      <div className="mt-8">
+        <Link
+          to="/"
+          className="flex flex-row text-sm text-gray-500 gap-x-2 mb-4"
+        >
+          <ArrowLeftIcon className="w-4 h-4" />
+          <p>Back to events</p>
+        </Link>
+      </div>
 
-      <Breadcrumb
-        items={[
-          { label: "Home" },
-          { label: "Rugby Union", onClick: goToHome },
-          { label: "National Provincial Championship" },
-        ]}
-        current="Waikato vs Bay of Plenty"
-        wrap
-      />
-
+      {/* event header */}
       <EventSummaryCard
-        homeTeam="Waikato"
-        awayTeam="Bay of Plenty"
-        kickoff="Today at 08:10"
-        venue="FMG Stadium Waikato"
-        graphView={graphView}
-        onGraphViewChange={setGraphView}
-        odds={mainOdds}
-        selectedOdd={selectedOdd}
-        onToggleOdd={toggleOdd}
+        eventName={event.name}
+        eventType={event.type}
+        eventState={event.state}
+        kickoff={new Date(event.start_datetime).toLocaleString()}
+        venue={event.venue?.name}
       />
 
-      {/* ── Market filter tabs ── */}
-      <PillTabs
-        items={marketTabs}
-        active={activeMarket}
-        onChange={setActiveMarket}
-        size="md"
-        className="px-4 sm:px-6 mb-4"
-      />
-
-      {/* ── Draw no bet section ── */}
-      <MarketSection title="Draw no bet" open={dnbOpen} onToggle={() => setDnbOpen((v) => !v)}>
-        <div className="border-t border-gray-100">
-          <div className="grid grid-cols-2 divide-x divide-gray-100">
-            <OddsTableHeader />
-            <OddsTableHeader firstColumnLabel="" />
-          </div>
-          <div className="grid grid-cols-2 divide-x divide-gray-100 hover:bg-gray-50 transition-colors">
-            {drawNoBet.map((row) => (
-              <OddsRow
-                key={row.contract}
-                row={row}
-                idPrefix={`dnb-${row.contract}`}
-                selectedOdd={selectedOdd}
-                onToggleOdd={toggleOdd}
-                className="py-3"
-              />
-            ))}
-          </div>
-        </div>
-      </MarketSection>
-
-      {/* ── Half-time / full-time section ── */}
-      <MarketSection
-        title="Half-time/full-time"
-        open={htftOpen}
-        onToggle={() => setHtftOpen((v) => !v)}
-      >
-        <div className="border-t border-gray-100">
-          <div className="grid grid-cols-2 divide-x divide-gray-100">
-            <OddsTableHeader />
-            <OddsTableHeader firstColumnLabel="" />
-          </div>
-
-          {Array.from({ length: Math.max(htftLeft.length, htftRight.length) }).map((_, i) => {
-            const left = htftLeft[i];
-            const right = htftRight[i];
-            return (
-              <div
-                key={i}
-                className="grid grid-cols-2 divide-x divide-gray-100 border-t border-gray-50 hover:bg-gray-50 transition-colors"
-              >
-                {left ? (
-                  <OddsRow
-                    row={left}
-                    idPrefix={`htft-L${i}`}
-                    selectedOdd={selectedOdd}
-                    onToggleOdd={toggleOdd}
-                    className="py-2.5"
-                  />
-                ) : (
-                  <div />
-                )}
-                {right ? (
-                  <OddsRow
-                    row={right}
-                    idPrefix={`htft-R${i}`}
-                    selectedOdd={selectedOdd}
-                    onToggleOdd={toggleOdd}
-                    className="py-2.5"
-                  />
-                ) : (
-                  <div />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </MarketSection>
-
+      <div className="flex flex-col gap-3">
+        {markets.map((market) => {
+          const isOpen = openIds.has(market.id);
+          const marketContracts = contractsByMarket.get(market.id) ?? [];
+          return (
+            <MarketSection
+              key={market.id}
+              market={market}
+              isOpen={isOpen}
+              onToggle={toggle}
+              quotes={quotes}
+              marketContracts={marketContracts}
+            />
+          );
+        })}
+      </div>
       <div className="h-8" />
     </div>
   );

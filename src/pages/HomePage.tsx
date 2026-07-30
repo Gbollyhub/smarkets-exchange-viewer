@@ -1,88 +1,88 @@
-import { useNavigate } from "react-router-dom";
-import { useEvent } from "@/hooks/useEvent";
-import { useHomeFilters } from "@/hooks/useHomeFilters";
+import usePopularEvents from "@/hooks/usePopularEvents";
 import { useOddSelection } from "@/hooks/useOddSelection";
-import { homeSports, tabs, timeFilters, matches } from "@/data/homeData";
-import SportsSubNav from "@/components/SportsSubNav";
-import Breadcrumb from "@/components/Breadcrumb";
-import TabsBar from "@/components/TabsBar";
-import PillTabs from "@/components/PillTabs";
-import CompetitionHeader from "@/components/CompetitionHeader";
 import MatchCard from "@/components/MatchCard";
-import { StarIcon } from "@/components/icons";
-import type { Match } from "@/types";
+import type { PricedContract } from "@/types";
+import { useFeaturedMarkets } from "@/hooks/useFeaturedMarkets";
+import { useContracts } from "@/hooks/useContracts";
+import { useQuotes } from "@/hooks/useQuotes";
+import { useMemo } from "react";
+import type { SmarketsEvent, Market, QuotesResponse } from "@/types";
 
-type Props = {};
+interface BoardItem {
+  event: SmarketsEvent;
+  market: Market | undefined;
+  contracts: PricedContract[];
+}
 
-function HomePage({}: Props) {
-  const { eventNavigation } = useEvent();
-  const { isLoading, isError } = eventNavigation;
-  const navigate = useNavigate();
-
+function HomePage() {
   const {
-    activeTab,
-    setActiveTab,
-    activeFilter,
-    setActiveFilter,
-    sectionOpen,
-    setSectionOpen,
-  } = useHomeFilters();
+    events = [],
+    isLoading: eventsLoading,
+    isError: eventsError,
+  } = usePopularEvents();
+
+  // only upcoming or in-play events, explicit allowlist
+  const featuredEvents = useMemo<SmarketsEvent[]>(
+    () => events.filter((e) => e.state === "upcoming" || e.state === "live"),
+    [events],
+  );
+
+  const eventIds = useMemo<string[]>(
+    () => featuredEvents.map((e) => e.id),
+    [featuredEvents],
+  );
+
+  const { data: markets = [] } = useFeaturedMarkets(eventIds);
+  const marketIds = useMemo<string[]>(
+    () => markets.map((m) => m.id),
+    [markets],
+  );
+  const { data: contracts = [] } = useContracts(marketIds);
+  const { data: quotes = {} as QuotesResponse } = useQuotes(marketIds);
   const { selectedOdd, toggleOdd } = useOddSelection();
 
-  const handleSelectMatch = (match: Match) => {
-    navigate(`/event/${match.id}`);
-  };
+  // one view-model per event: its featured market + priced contracts
+  const board = useMemo<BoardItem[]>(() => {
+    return featuredEvents.map((event) => {
+      const market = markets.find((m) => m.event_id === event.id);
+      const marketContracts = market
+        ? contracts.filter((c) => c.market_id === market.id)
+        : [];
+      const priced: PricedContract[] = marketContracts.map((c) => ({
+        id: c.id,
+        name: c.name,
+        buy: quotes[c.id]?.offers?.[0]?.price,
+        sell: quotes[c.id]?.bids?.[0]?.price,
+      }));
+      return { event, market, contracts: priced };
+    });
+  }, [featuredEvents, markets, contracts, quotes]);
 
-  if (isLoading) return <div>Loading…</div>;
-  if (isError) return <div>Something went wrong</div>;
+  if (eventsLoading) return <div className="p-6">Loading featured events…</div>;
+  if (eventsError)
+    return <div className="p-6">Couldn't load events. Try again.</div>;
+  if (featuredEvents.length === 0)
+    return <div className="p-6">No featured events right now.</div>;
 
   return (
     <div className="min-h-screen bg-[#f0f2f5] font-sans text-sm">
-      <SportsSubNav sports={homeSports} showAllButton />
-      <Breadcrumb items={[{ label: "Home" }]} current="Rugby Union" />
-
-      <div className="px-6">
-        <div className="bg-white w-full px-4 py-5 mb-4 rounded-md border border-gray-200">
-          <div className="flex items-center gap-2 mb-1.5">
-            <h1 className="text-xl font-bold text-gray-900">Rugby Union</h1>
-            <StarIcon className="w-4 h-4 text-gray-400" />
-          </div>
-          <p className="text-xs text-gray-500 leading-relaxed max-w-xl">
-            Trade and bet on a variety of rugby betting markets, including those
-            on the Six Nations and Aviva Premiership.
-          </p>
+      <div className="p-4 flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold">Featured events</h1>
+          <span className="text-xs text-gray-500">Live · updates every 4s</span>
         </div>
+
+        {board.map(({ event, market, contracts }: any) => (
+          <MatchCard
+            key={event.id}
+            event={event}
+            market={market}
+            contracts={contracts}
+            selectedOdd={selectedOdd}
+            onToggleOdd={toggleOdd}
+          />
+        ))}
       </div>
-
-      <TabsBar items={tabs} active={activeTab} onChange={setActiveTab} />
-
-      <PillTabs
-        items={timeFilters}
-        active={activeFilter}
-        onChange={setActiveFilter}
-        className="px-4 sm:px-6 py-3"
-      />
-
-      <CompetitionHeader
-        title="National Provincial Championship"
-        count={7}
-        open={sectionOpen}
-        onToggle={() => setSectionOpen((v) => !v)}
-      />
-
-      {sectionOpen && (
-        <div className="mx-4 sm:mx-6 mb-6">
-          {matches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              selectedOdd={selectedOdd}
-              onToggleOdd={toggleOdd}
-              onSelect={handleSelectMatch}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

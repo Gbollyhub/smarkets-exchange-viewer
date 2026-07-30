@@ -6,7 +6,7 @@ type AuthState = {
   token: string | null;
   email: string | null;
   isReady: boolean;
-  setSession: (token: string, email: string) => void;
+  setSession: (token: string, email: string, refreshToken: string | undefined) => void;
   logout: () => void;
 };
 
@@ -24,7 +24,8 @@ function readStoredEmail(): string | null {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
     const stored = readStoredToken();
-    if (stored) api.defaults.headers.common["Authorization"] = `Session-Token ${stored}`;
+    if (stored)
+      api.defaults.headers.common["Authorization"] = `Session-Token ${stored}`;
     return stored;
   });
 
@@ -33,11 +34,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // with a synchronous read there's no async gap, so we're ready immediately
   const [isReady] = useState(true);
 
-  const setSession = (token: string, email: string) => {
+  const setSession = (token: string, email: string, refreshToken?: string) => {
     setToken(token);
     setEmail(email);
     localStorage.setItem("smk_token", token);
     localStorage.setItem("smk_email", email);
+    if (refreshToken) localStorage.setItem("smk_refresh", refreshToken); // <- add
     api.defaults.headers.common["Authorization"] = `Session-Token ${token}`;
   };
 
@@ -46,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setEmail(null);
     localStorage.removeItem("smk_token");
     localStorage.removeItem("smk_email");
+    localStorage.removeItem("smk_refresh"); // <- add
     delete api.defaults.headers.common["Authorization"];
   };
 

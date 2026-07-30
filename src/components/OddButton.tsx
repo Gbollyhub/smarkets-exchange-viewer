@@ -1,41 +1,31 @@
+import { formatDecimal } from "@/lib/misc";
+import type { PricedContract } from "@/types";
+
 type Props = {
   id: string;
-  value: number;
-  type: "buy" | "sell";
+  value: PricedContract;
   selected: boolean;
   onToggle: (id: string) => void;
   stopPropagation?: boolean;
   size?: "xs" | "sm";
 };
 
-export default function OddButton({
-  id,
-  value,
-  type,
-  selected,
-  onToggle,
-  stopPropagation = false,
-  size = "sm",
-}: Props) {
-  const isBuy = type === "buy";
-
+export default function OddButton({ value, size = "sm" }: Props) {
   return (
-    <button
-      onClick={(e) => {
-        if (stopPropagation) e.stopPropagation();
-        onToggle(id);
-      }}
-      className={`${size === "xs" ? "text-xs" : "text-sm"} font-semibold px-1.5 py-0.5 rounded transition-colors ${
-        isBuy
-          ? selected
-            ? "bg-green-600 text-white"
-            : "text-green-600 hover:bg-green-50"
-          : selected
-            ? "bg-blue-600 text-white"
-            : "text-blue-600 hover:bg-blue-50"
-      }`}
+    <div
+      className={`${size === "xs" ? "text-xs" : "text-sm"} flex flex-col
+        border border-gray-300 rounded-sm p-3 text-center font-semibold rounded transition-colors`}
     >
-      {value}
-    </button>
+      <span className="text-sm mb-2">{value.name}</span>
+      <div className="flex flex-row justify-center gap-4">
+         <span className="p-2 stext-center text-sm font-semibold rounded bg-green-600 text-white py-1">
+        {formatDecimal(value.buy)}
+      </span>
+      <span className="p-2 text-center text-sm font-semibold rounded bg-blue-600 text-white py-1">
+        {formatDecimal(value.sell)}
+      </span>
+      </div>
+     
+    </div>
   );
 }
