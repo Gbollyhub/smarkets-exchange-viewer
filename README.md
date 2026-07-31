@@ -2,6 +2,7 @@
 
 A React application that authenticates with the Smarkets API and displays live exchange data. The application includes a featured events homepage with live price updates and an event page showing all available markets with both buy and sell prices.
 
+Github URL: https://github.com/Gbollyhub/smarkets-exchange-viewer 
 ---
 
 ## Features
