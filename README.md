@@ -89,7 +89,7 @@ One of the main technical decisions was using the `popular/event_ids` endpoint t
 
 The biggest challenge was understanding the Smarkets API and how events, markets, contracts, and quotes relate to one another. I also encountered CORS restrictions, which were resolved using the Vite development proxy. Large events introduced another challenge, as requesting quotes for every market exceeded URL length limits. To address this, contracts and prices are only requested for expanded markets, reducing both request size and API usage.
 
-With additional time, I would replace polling with the streaming API for true real-time updates, move authentication behind a backend using secure httpOnly cookies, expand automated test coverage, improve accessibility, and add category browsing, order book depth, and price history.
+With additional time, I would replace polling with the streaming API for true real-time updates, expand automated test coverage, improve accessibility, and add category browsing, order book depth, and price history.
 
 ---
 
@@ -146,7 +146,6 @@ Current test coverage includes:
 Given more time, I would:
 
 - Replace polling with the Smarkets streaming API.
-- Move authentication behind a backend using secure httpOnly cookies.
 - Expand unit and integration test coverage.
 - Add end-to-end tests for authentication and live pricing.
 - Add category browsing and filtering.
@@ -154,7 +153,6 @@ Given more time, I would:
 - Add loading skeletons and retry strategies.
 - Display order book depth.
 - Add historical price charts.
-- Support the passwordless authentication flow.
 
 ---
 
