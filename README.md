@@ -100,7 +100,7 @@ The application uses the following Smarkets API endpoints:
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /v3/sessions/` | Authenticate the user and create a session. |
-| `GET /v0/users/current/` | Retrieve the authenticated user's information. |
+| `GET /v3/users/` | Retrieve the authenticated user's information. |
 | `DELETE /v0/sessions/current/` | Log out and invalidate the current session. |
 | `GET /v3/popular/event_ids/` | Retrieve featured exchange events displayed on the homepage. |
 | `GET /v3/events/{ids}/` | Retrieve event details. |
